@@ -1,0 +1,167 @@
+<html>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <body id="root"></body>
+  <style>
+    body {
+      background-color: #00a6dd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .test {
+      width: 500px;
+      height: 500px;
+      background-color: lightgreen;
+    }
+    .wrapper {
+      display: flex;
+      width: 50vw;
+      height: 50vh;
+      background-color: lightsalmon;
+    }
+    #wrapper {
+      color: red;
+    }
+  </style>
+  <script type="text/babel">
+    console.log("123")
+    // const element = (
+    //   <div id="foo">
+    //     <a>bar</a>
+    //     <b />
+    //   </div>
+    // )
+
+    //   let element2 = React.createElement(
+    //   "div",
+    //   {
+    //     id: "foo",
+    //   },
+    //   React.createElement("a", null, "bar2"),
+    //   React.createElement("b", null)
+    // )
+    function testBabel(type, props, ...children) {
+      console.log("this is test babel", type, props, ...children)
+      return "hoan"
+    }
+
+    function createElement(type, props, ...children) {
+      console.log("children", children)
+      console.log("cua no ahuhu", type, props, children)
+
+      return {
+        type,
+        props: {
+          ...props,
+          children: children.map((child) =>
+            typeof child === "object" ? child : createTextElement(child)
+          ),
+        },
+      }
+    }
+    function createTextElement(text) {
+      return {
+        type: "TEXT_ELEMENT",
+        props: {
+          nodeValue: text,
+          children: [],
+        },
+      }
+    }
+    // link list
+    function render(element, container) {
+      console.log("render", element)
+
+      const dom =
+        element.type == "TEXT_ELEMENT"
+          ? document.createTextNode(element.props.nodeValue)
+          : document.createElement(element.type)
+
+      const isProperty = (key) => key !== "children"
+
+      Object.keys(element.props)
+        .filter(isProperty)
+        .forEach((name) => {
+          dom[name] = element.props[name]
+        })
+      element.props.children.forEach((child) => render(child, dom)) // render (child, dom) h1-> span
+      container.appendChild(dom)
+    }
+    // <div><span><h1></h1></span><div>
+    // => div
+    // => div <- span
+    // => div <- span <- h1
+    const Hoan = {
+      createElement,
+      render,
+      testBabel,
+    }
+    // const element = Hoan.createElement(
+    //   "div",
+    //   { id: "foo" },
+    //   Hoan.createElement("a", null, "bar"),
+    //   Hoan.createElement("b")
+    // )
+    /** @jsx Hoan.createElement */
+    const element2 = (
+      <div id="wrapper" className="abc">
+        <span>
+          <h1 title="hello123">hello</h1>
+        </span>
+      </div>
+    )
+    // class{} for
+
+    console.log("element2", element2)
+
+    // const element = (
+    //   <div id="foo">
+    //     <a>bar</a>
+    //     <b />
+    //   </div>
+    // )
+    // console.log("element", element)
+    //  const for ....
+    const element123 = (
+      <div classHoan="wrapper">
+        <div>div</div>
+        <h1>h1</h1>
+        <span>span</span>
+        <ul>
+          <li>1</li>
+          <li>2</li>
+          <li>3</li>
+        </ul>
+        <table classHoan="table">
+          <thead title="table" id="idTable">
+            <tr>
+              <td>Name</td>
+              <td>year</td>
+              <td>age</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Heu</td>
+              <td>123</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>Unu</td>
+              <td>11</td>
+              <td>44</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+    // console.log("element2", element123)
+    // console.log("element", element)
+    const container = document.getElementById("root")
+    // Hoan.render(element123, container)
+    //createElement("h1", {}, null)
+    Hoan.render(element123, container)
+
+    // console.log("element2", <div></div>)
+  </script>
+</html>

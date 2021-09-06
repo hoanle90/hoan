@@ -1,0 +1,57 @@
+<html>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <body id="root"></body>
+  <style>
+    body {
+      background-color: #00a6dd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .test {
+      width: 500px;
+      height: 500px;
+      background-color: lightgreen;
+    }
+    div {
+      min-width: 30px;
+      min-height: 30px;
+      background-color: lightsalmon;
+      margin: 10px;
+    }
+  </style>
+  <script type="text/babel">
+    let nextUnitOfWork = null
+    let i = 0
+
+    function workLoop(deadline) {
+      console.log("workLoop", deadline.timeRemaining())
+      let shouldYield = false
+      // 16ms
+      while (!shouldYield && i < 10000) {
+        performUnitOfWork(nextUnitOfWork) // ko chay
+
+        shouldYield = deadline.timeRemaining() < 1
+      }
+      requestIdleCallback(workLoop) // => paint lai 1 div
+    }
+    requestIdleCallback(workLoop) // 16ms
+    // 16 => deadline.timeRemaining()
+    // 6ms
+    // 10
+    // 0 -1
+    // -80
+    // 102ms
+
+    function performUnitOfWork(fiber) {
+      // 16ms 100 100 100 100 -> render trong component
+      // 10ms
+      console.log(123)
+      i++
+      const container = document.getElementById("root")
+      const node = document.createElement("div")
+      container.appendChild(node)
+    }
+  </script>
+</html>
